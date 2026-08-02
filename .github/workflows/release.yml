@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 jobs:
@@ -16,5 +17,4 @@ jobs:
       - name: Create or update release PR
         uses: googleapis/release-please-action@v4
         with:
-          release-type: go
           target-branch: main

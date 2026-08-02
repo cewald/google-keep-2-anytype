@@ -1,0 +1,9 @@
+{
+  "release-type": "go",
+  "packages": {
+    ".": {
+      "package-name": "keep2anytype",
+      "release-type": "go"
+    }
+  }
+}
