@@ -193,6 +193,7 @@ func main() {
 	if *mode != "mixed" && *mode != "pages" {
 		panic("invalid mode")
 	}
+
 	files, _ := filepath.Glob(filepath.Join(*in, "*.json"))
 	fmt.Printf("Found %d JSON files in %s\n", len(files), *in)
 	var notes []Note

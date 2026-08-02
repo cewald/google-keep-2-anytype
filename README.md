@@ -1,7 +1,7 @@
 # keep2Anytype
 
 Go CLI for converting Google Keep Takeout exports into Any-Block JSON files for
-import into Anytype.
+import into Anytype.io.
 
 Export your Google Keep data from [Google Takeout](https://takeout.google.com/settings/takeout) and unzip it.
 
@@ -13,10 +13,18 @@ go build -o keep2anytype .
 
 The repository also includes a prebuilt Linux `keep2anytype` binary.
 
+## Releases
+
+Push commits to `main` using Conventional Commits such as `feat: add X` or
+`fix: handle empty notes`. Release Please will open or update a release PR,
+calculate the next semantic version, and create the version tag when the PR is
+merged. That tag triggers GoReleaser, which builds Linux, Windows, and macOS
+binaries for amd64 and arm64 and publishes SHA-256 checksums.
+
 ## Usage
 
 ```sh
-./keep2anytype -p "<path-to-google-notizen>" -o "<output-folder>"
+./keep2anytype -p "<path-to-google-keep-export>" -o "<output-folder>"
 ```
 
 ## CLI Options
