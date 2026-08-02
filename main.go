@@ -129,6 +129,9 @@ func convert(n Note, mode string, tagIDs map[string]string) AnyPage {
 	blocks = append(blocks, map[string]any{"id": "", "restrictions": map[string]any{}, "childrenIds": children, "smartblock": map[string]any{}}, header, map[string]any{"id": "featuredRelations", "restrictions": restrictions(false), "featuredRelations": map[string]any{}})
 	if n.TextContent != "" {
 		for _, line := range strings.Split(n.TextContent, "\n") {
+			if strings.TrimSpace(line) == "" {
+				continue
+			}
 			b := textBlock(line, "", nil)
 			blocks = append(blocks, b)
 			children = append(children, b["id"].(string))
