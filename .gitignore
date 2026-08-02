@@ -1,0 +1,10 @@
+/keep2anytype.exe
+/bin/
+/dist/
+/build/
+
+# Local files
+.env
+.DS_Store
+.idea/
+*.log
