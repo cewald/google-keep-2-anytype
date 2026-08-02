@@ -16,14 +16,10 @@ The repository also includes a prebuilt Linux `keep2anytype` binary.
 ## Releases
 
 Push commits to `main` using Conventional Commits such as `feat: add X` or
-`fix: handle empty notes`. Release Please will open or update a release PR,
-calculate the next semantic version, and create the version tag when the PR is
-merged. That tag triggers GoReleaser, which builds Linux, Windows, and macOS
-binaries for amd64 and arm64 and publishes SHA-256 checksums.
-
-GitHub must allow workflows to create pull requests. Enable **Settings ->
-Actions -> General -> Workflow permissions -> Allow GitHub Actions to create
-and approve pull requests**.
+`fix: handle empty notes`. The release workflow creates the next semantic
+version tag directly, without opening a PR, and runs GoReleaser. It builds
+Linux, Windows, and macOS binaries for amd64 and arm64 and publishes SHA-256
+checksums.
 
 ## Usage
 

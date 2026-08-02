@@ -7,14 +7,38 @@ on:
 
 permissions:
   contents: write
-  issues: write
-  pull-requests: write
 
 jobs:
-  release-please:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Create or update release PR
-        uses: googleapis/release-please-action@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
         with:
-          target-branch: main
+          fetch-depth: 0
+
+      - name: Create semantic version tag
+        id: tag
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
+
+      - name: Set up Go
+        if: steps.tag.outputs.new_tag != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build and publish release
+        if: steps.tag.outputs.new_tag != ''
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
