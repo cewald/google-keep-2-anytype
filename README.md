@@ -5,13 +5,16 @@ import into Anytype.io.
 
 Export your Google Keep data from [Google Takeout](https://takeout.google.com/settings/takeout) and unzip it.
 
-## Build
+## Install or Build
+
+You have two options:
+
+1. Download the binary for your operating system from the project's GitHub Releases page, extract it, use it or place it on your `PATH` to use it.
+2. Build it locally with Go:
 
 ```sh
 go build -o keep2anytype .
 ```
-
-The repository also includes a prebuilt Linux `keep2anytype` binary.
 
 ## Releases
 
