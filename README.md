@@ -27,13 +27,13 @@ checksums.
 ## Usage
 
 ```sh
-./keep2anytype -p "<path-to-google-keep-export>" -o "<output-folder>"
+./keep2anytype "<path-to-google-keep-export>" "<output-folder>"
 ```
 
 ## CLI Options
 
-* `-p` - Path containing Google Keep `.json` files.
-* `-o` - Output directory. It is created if necessary and must differ from the input directory.
+* First argument - Path containing Google Keep `.json` files.
+* Second argument - Output directory. It is created if necessary and must differ from the input directory.
 * `-a` - Include archived notes. Defaults to `false`.
 * `-m` - Conversion mode: `mixed` (default) or `pages`. Mixed mode uses pages for titled notes and notes for untitled notes. Pages mode converts every note to a page.
 

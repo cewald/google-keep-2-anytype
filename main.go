@@ -96,14 +96,14 @@ func textBlock(text, style string, checked *bool) map[string]any {
 		from, to := loc[0], loc[1]
 		marks = append(marks, map[string]any{"range": map[string]any{"from": from, "to": to}, "type": "Link", "param": text[from:to]})
 	}
-	t := map[string]any{"text": text, "marks": map[string]any{"marks": marks}}
-	if style != "" {
-		t["style"] = style
+	if style == "" {
+		style = "Paragraph"
 	}
+	t := map[string]any{"text": text, "style": style, "marks": map[string]any{"marks": marks}, "checked": false, "color": "", "iconEmoji": "", "iconImage": ""}
 	if checked != nil {
 		t["checked"] = *checked
 	}
-	return map[string]any{"id": uuid(), "text": t}
+	return map[string]any{"id": uuid(), "fields": nil, "restrictions": restrictions(false), "childrenIds": []string{}, "text": t}
 }
 
 func convert(n Note, mode string, tagIDs map[string]string) AnyPage {
@@ -120,7 +120,7 @@ func convert(n Note, mode string, tagIDs map[string]string) AnyPage {
 		}
 	}
 	blocks := []any{}
-	children := []string{}
+	children := []string{"header"}
 	headerChildren := []string{"featuredRelations"}
 	if typ == "page" {
 		headerChildren = append(headerChildren, "title", "description")
@@ -184,21 +184,21 @@ func writeJSON(dir, name string, v any) error {
 	return os.WriteFile(filepath.Join(dir, name), append(b, '\n'), 0644)
 }
 func main() {
-	in := flag.String("p", "", "Keep folder")
-	out := flag.String("o", "", "output folder")
 	mode := flag.String("m", "mixed", "pages or mixed")
 	archive := flag.Bool("a", false, "include archive")
 	flag.Parse()
-	if *in == "" || *out == "" || *in == *out {
+	args := flag.Args()
+	if len(args) != 2 || args[0] == args[1] {
 		flag.Usage()
 		return
 	}
+	in, out := args[0], args[1]
 	if *mode != "mixed" && *mode != "pages" {
 		panic("invalid mode")
 	}
 
-	files, _ := filepath.Glob(filepath.Join(*in, "*.json"))
-	fmt.Printf("Found %d JSON files in %s\n", len(files), *in)
+	files, _ := filepath.Glob(filepath.Join(in, "*.json"))
+	fmt.Printf("Found %d JSON files in %s\n", len(files), in)
 	var notes []Note
 	for _, f := range files {
 		b, e := os.ReadFile(f)
@@ -219,7 +219,7 @@ func main() {
 		panic(errors.New("no notes found"))
 	}
 	fmt.Printf("Loaded %d notes\n", len(notes))
-	_ = os.MkdirAll(*out, 0755)
+	_ = os.MkdirAll(out, 0755)
 	ids := map[string]string{}
 	var names []string
 	for _, n := range notes {
@@ -228,7 +228,7 @@ func main() {
 				ids[l.Name], _ = func() (string, string) {
 					p, id := tag(l.Name)
 					name := "tag-" + strings.ReplaceAll(strings.ReplaceAll(l.Name, "/", "_"), "\\", "_") + ".json"
-					if err := writeJSON(*out, name, p); err != nil {
+					if err := writeJSON(out, name, p); err != nil {
 						panic(err)
 					}
 					fmt.Printf("Created tag %q\n", l.Name)
@@ -245,10 +245,10 @@ func main() {
 			base = "note-" + uuid()
 		}
 		name := base + ".json"
-		if err := writeJSON(*out, name, convert(n, *mode, ids)); err != nil {
+		if err := writeJSON(out, name, convert(n, *mode, ids)); err != nil {
 			panic(err)
 		}
 		fmt.Printf("[%d/%d] Converted %s\n", i+1, len(notes), name)
 	}
-	fmt.Printf("Finished: %d notes and %d tags written to %s\n", len(notes), len(ids), *out)
+	fmt.Printf("Finished: %d notes and %d tags written to %s\n", len(notes), len(ids), out)
 }
