@@ -1,7 +1,7 @@
-# keep2Anytype
+# Google Keep Converter
 
-Go CLI for converting Google Keep Takeout exports into Any-Block JSON files for
-import into Anytype.io.
+Go CLI for converting Google Keep Takeout exports into either Memos API payloads
+or Anytype Any-Block JSON files.
 
 Export your Google Keep data from [Google Takeout](https://takeout.google.com/settings/takeout) and unzip it.
 
@@ -13,7 +13,7 @@ You have two options:
 2. Build it locally with Go:
 
 ```sh
-go build -o keep2anytype .
+go build -o keepconv .
 ```
 
 ## Releases
@@ -27,27 +27,64 @@ checksums.
 ## Usage
 
 ```sh
-./keep2anytype "<path-to-google-keep-export>" "<output-folder>"
+./keepconv "<path-to-google-keep-export>" "<output-folder>"
 ```
+
+The default output format is `memos`. The output directory is created if it
+does not exist.
 
 ## CLI Options
 
 * First argument - Path containing Google Keep `.json` files.
 * Second argument - Output directory. It is created if necessary and must differ from the input directory.
 * `-a` - Include archived notes. Defaults to `false`.
-* `-m` - Conversion mode: `mixed` (default) or `pages`. Mixed mode uses pages for titled notes and notes for untitled notes. Pages mode converts every note to a page.
+* `-format` - Output format: `memos` (default) or `anytype`.
+* `-host` - Memos instance URL. Enables importing into the running instance.
+* `-access-token` - Memos access token. Required with `-host`.
 
-## Import
+`MEMOS_HOST` and `MEMOS_ACCESS_TOKEN` can be used instead of the flags. The
+host should be the instance URL, such as `https://memos.example.com`.
 
-In Anytype, select `File -> Import -> Any-Block` and choose the output folder.
-Import the complete folder so generated tag relation options are imported with
-the notes.
+## Memos
+
+Generate local Memos request payloads:
+
+```sh
+./keepconv -format memos "<keep-export>" "<output-folder>"
+```
+
+Import directly into a running Memos instance:
+
+```sh
+./keepconv \
+  -format memos \
+  -host "https://memos.example.com" \
+  -access-token "$MEMOS_ACCESS_TOKEN" \
+  "<keep-export>" "<output-folder>"
+```
+
+The tool POSTs each memo to `/api/v1/memos` using Bearer authentication. Pinned
+notes are explicitly updated after creation because some Memos versions do not
+apply `pinned` during creation.
+
+## Anytype
+
+Generate Anytype Any-Block files:
+
+```sh
+./keepconv -format anytype "<keep-export>" "<output-folder>"
+```
+
+Import the complete output directory in Anytype using `File -> Import ->
+Any-Block`. Keep labels are emitted as Anytype tag relation options and linked
+to the generated pages.
 
 ## Notes
 
-* Imports Google Keep labels as Anytype tags
+* Memos mode imports Google Keep labels as Markdown tags
+* Anytype mode imports Google Keep labels as tag relations
+* Memos mode explicitly pins Keep-pinned notes after creation
 * Does not import Google Keep images
 * Does not import Google Keep note colors
 * Modifies the created and modified dates to match the Google Keep note
-* If the Keep note does not have a title, it uses the created date as the title
-* Automatically parses any hyperlinks or annotations
+* Converts annotations and checklist items to Markdown

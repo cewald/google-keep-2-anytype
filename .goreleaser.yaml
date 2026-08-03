@@ -5,9 +5,9 @@ before:
     - go mod tidy
 
 builds:
-  - id: keep2anytype
+  - id: keepconv
     main: .
-    binary: keep2anytype
+    binary: keepconv
     env:
       - CGO_ENABLED=0
     goos:
@@ -23,7 +23,7 @@ builds:
 
 archives:
   - formats: [tar.gz]
-    ids: [keep2anytype]
+    ids: [keepconv]
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
     format_overrides:
